@@ -19,7 +19,7 @@ done < <(find /ite/lib/modules/${UNAME}/kernel/drivers/hwmon/ -name "*.ko")
 # Download icon
 cd ${DATA_DIR}
 mkdir -p /ite/usr/local/emhttp/plugins/it87-driver/images
-wget -O /ite/usr/local/emhttp/plugins/it87-driver/images/it87.png https://raw.githubusercontent.com/ich777/docker-templates/master/ich777/images/ite.png
+wget -O /ite/usr/local/emhttp/plugins/it87-driver/images/it87-driver.png https://raw.githubusercontent.com/ich777/docker-templates/master/ich777/images/ite.png
 
 # Create Slackware Package
 PLUGIN_NAME="it87"
