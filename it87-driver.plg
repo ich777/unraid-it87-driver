@@ -1,0 +1,136 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+  <!ENTITY name      "it87-driver">
+  <!ENTITY author    "ich777">
+  <!ENTITY version   "2022.09.09">
+  <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
+  <!ENTITY pluginURL "&gitURL;/&name;.plg">
+  <!ENTITY plugin    "/boot/config/plugins/&name;">
+  <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+  <!ENTITY packages  "/boot/config/plugins/&name;/packages">
+]>
+
+<PLUGIN  name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.10.3">
+
+<CHANGES>
+
+###2022.09.09
+- Initial release
+
+</CHANGES>
+
+<FILE Run="/bin/bash">
+<INLINE>
+rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version;')
+</INLINE>
+</FILE>
+
+<FILE Name="&emhttp;/README.md">
+<INLINE>
+**ITE IT87 Driver**
+
+This package contains a modified version from the ITE IT87 Drivers to get compatibility with newer chips like IT8686E,.. and installs them for using it with the Dynamix System Temperature Plugin.  
+  
+Source: https://github.com/frankcrawford/it87
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash">
+<INLINE>
+
+download() {
+#Download IT87 Drivers
+if wget -q -nc --show-progress --progress=bar:force:noscroll -O "&packages;/${KERNEL_V%%-*}/${LAT_PACKAGE}" "${DL_URL}/${LAT_PACKAGE}" ; then
+  wget -q -nc --show-progress --progress=bar:force:noscroll -O "&packages;/${KERNEL_V%%-*}/${LAT_PACKAGE}.md5" "${DL_URL}/${LAT_PACKAGE}.md5"
+  if [ "$(md5sum &packages;/${KERNEL_V%%-*}/${LAT_PACKAGE} | awk '{print $1}')" != "$(cat &packages;/${KERNEL_V%%-*}/${LAT_PACKAGE}.md5 | awk '{print $1}')" ]; then
+    echo
+    echo "---CHECKSUM ERROR!---"
+    rm -rf &plugin; &emhttp;
+    exit 1
+  fi
+  echo
+  echo "-------------------Sucessfully downloaded IT87 Drivers-------------------"
+else
+  echo
+  echo "-----------------------Can't download IT87 Drivers-----------------------"
+  rm -rf &plugin; &emhttp;
+  exit 1
+fi
+}
+
+check() {
+if ! ls -1 &packages;/${KERNEL_V%%-*}/ | grep -q "${PACKAGE}" ; then
+  LAT_PACKAGE="$(wget -qO- https://api.github.com/repos/ich777/unraid-it87-driver/releases/tags/${KERNEL_V} | jq -r '.assets[].name' | grep "${PACKAGE}" | grep -E -v '\.md5$' | sort -V | tail -1)"
+  echo
+  echo "-----------------------Downloading IT87 Drivers!-------------------------"
+  echo "---------This could take some time, please don't close this window!----------"
+  download
+else
+  echo
+  echo "-----------------------IT87 Drivers found locally------------------------"
+fi
+}
+
+install() {
+#Install IT87 Drivers
+/sbin/modprobe -rf it87 2>/dev/null
+/sbin/installpkg "&packages;/${KERNEL_V%%-*}/${PACKAGE}*.txz"
+depmod -a
+}
+
+activate() {
+/sbin/modprobe it87 2>/dev/null
+}
+
+# Define Variables
+KERNEL_V="$(uname -r)"
+PACKAGE="it87"
+DL_URL="https://github.com/ich777/unraid-it87-driver/releases/download/$KERNEL_V"
+
+if [ ! -d "&packages;/${KERNEL_V%%-*}" ]; then
+  mkdir -p "&packages;/${KERNEL_V%%-*}"
+fi
+
+#Check for old packages
+rm -rf $(ls -d &packages;/* | grep -v "${KERNEL_V%%-*}")
+
+#Check if IT87 Drivers are allready downloaded
+check
+
+if ! modinfo it87 | grep "mmio" >/dev/null 2>&amp;1 ; then
+  install > /dev/null
+  activate
+fi
+
+#Install icon
+if [ ! -f "&emhttp;/images/&name;.png" ]; then
+  if [ ! -d "&emhttp;/images" ]; then
+    mkdir -p &emhttp;/images
+  fi
+  cp &plugin;/&name;.png &emhttp;/images/
+fi
+
+echo
+echo "----------------Installation of IT87 Drivers successful------------------"
+echo
+
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+
+echo "-----------------------------------"
+echo "---Uninstalling IT87 Drivers---"
+echo "-----------------------------------"
+# Remove plugin related files
+rm -rf &plugin; &emhttp;
+echo
+echo "--------------------------------------------------------------"
+echo "---IT87 Drivers uninstalled, please reboot your server!---"
+echo "--------------------------------------------------------------"
+echo
+
+</INLINE>
+</FILE>
+</PLUGIN>
