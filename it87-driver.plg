@@ -97,7 +97,7 @@ rm -rf $(ls -d &packages;/* | grep -v "${KERNEL_V%%-*}")
 #Check if IT87 Drivers are allready downloaded
 check
 
-if ! modinfo it87 | grep "mmio" >/dev/null 2>&amp;1 ; then
+if ! modinfo it87 | grep -q "mmio" >/dev/null 2>&amp;1 ; then
   install > /dev/null
   activate
 fi
