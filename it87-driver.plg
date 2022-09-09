@@ -29,7 +29,7 @@ rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version
 <INLINE>
 **ITE IT87 Driver**
 
-This package contains a modified version from the ITE IT87 Drivers to get compatibility with newer chips like IT8686E,.. and installs them for using it with the Dynamix System Temperature Plugin.  
+This package contains a modified version from the ITE IT87 Drivers to get compatibility with chips like IT8686E,.. and installs them for using it with the Dynamix System Temperature Plugin.  
   
 Source: https://github.com/frankcrawford/it87
 </INLINE>
