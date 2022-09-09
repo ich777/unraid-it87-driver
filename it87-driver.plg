@@ -19,12 +19,6 @@
 
 </CHANGES>
 
-<FILE Run="/bin/bash">
-<INLINE>
-rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version;')
-</INLINE>
-</FILE>
-
 <FILE Name="&emhttp;/README.md">
 <INLINE>
 **ITE IT87 Driver**
@@ -94,20 +88,12 @@ fi
 #Check for old packages
 rm -rf $(ls -d &packages;/* | grep -v "${KERNEL_V%%-*}")
 
-#Check if IT87 Drivers are allready downloaded
+#Check if IT87 Drivers are already downloaded
 check
 
 if ! modinfo it87 | grep -q "mmio" >/dev/null 2>&amp;1 ; then
   install > /dev/null
   activate
-fi
-
-#Install icon
-if [ ! -f "&emhttp;/images/&name;.png" ]; then
-  if [ ! -d "&emhttp;/images" ]; then
-    mkdir -p &emhttp;/images
-  fi
-  cp &plugin;/&name;.png &emhttp;/images/
 fi
 
 echo
