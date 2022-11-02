@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "it87-driver">
   <!ENTITY author    "ich777">
-  <!ENTITY version   "2022.09.09">
+  <!ENTITY version   "2022.11.02">
   <!ENTITY gitURL    "https://github.com/&author;/unraid-&name;/raw/master">
   <!ENTITY pluginURL "&gitURL;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -13,6 +13,9 @@
 <PLUGIN  name="&name;" author="&author;" version="&version;" pluginURL="&pluginURL;" min="6.10.3">
 
 <CHANGES>
+
+###2022.11.02
+- Added activation from module if it isn't activated already on Plugin installation with the option 'ignore_resource_conflict=1'
 
 ###2022.09.09
 - Initial release
@@ -73,7 +76,7 @@ depmod -a
 }
 
 activate() {
-/sbin/modprobe it87 2>/dev/null
+/sbin/modprobe it87 ignore_resource_conflict=1 2>/dev/null
 }
 
 # Define Variables
@@ -93,6 +96,9 @@ check
 
 if ! modinfo it87 | grep -q "mmio" >/dev/null 2>&amp;1 ; then
   install > /dev/null
+fi
+
+if ! lsmod | grep "it87" >/dev/null 2>&amp;1 ; then
   activate
 fi
 
