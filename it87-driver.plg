@@ -15,7 +15,7 @@
 <CHANGES>
 
 ###2024.07.10
-- Add Plugin Update Helper to ensure driver packages are downloaded ahead of time when unRAID is updated
+- Add Plugin Update Helper to ensure driver package is downloaded ahead of time when unRAID is updated
 
 ###2022.11.02
 - Added activation from module if it isn't activated already on Plugin installation with the option 'ignore_resource_conflict=1'
